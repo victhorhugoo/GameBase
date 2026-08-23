@@ -3,12 +3,12 @@ using VictorGame.StateMachine;
 public class PlayerStateShoot : StateBase
 {
     private const float duration = 0.3f; // tempo que o player fica "travado" atirando
-    private Player1 player;
+    private PlayerMoviment player;
     private float timer;
 
     public override void OnStateEnter(object o = null)
     {
-        player = o as Player1;
+        player = o as PlayerMoviment;
         if (player == null)
         {
             UnityEngine.Debug.LogError("PlayerStateShoot.OnStateEnter: contexto 'o' é nulo ou não é Player1.");
@@ -32,7 +32,7 @@ public class PlayerStateShoot : StateBase
         timer += UnityEngine.Time.deltaTime;
         if (timer >= duration)
         {
-            var next = player.InputVertical != 0 ? Player1.PlayerStates.Move : Player1.PlayerStates.Idle;
+            var next = player.InputVertical != 0 ? PlayerMoviment.PlayerStates.Move : PlayerMoviment.PlayerStates.Idle;
             player.stateMachine.SwitchState(next, player);
         }
     }

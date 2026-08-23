@@ -3,14 +3,14 @@ using VictorGame.StateMachine;
 
 public class PlayerStateMove : StateBase
 {
-    private Player1 player;
+    private PlayerMoviment player;
 
     public override void OnStateEnter(object o = null)
     {
-        player = o as Player1;
+        player = o as PlayerMoviment;
         if (player == null)
         {
-            Debug.LogError("PlayerStateMove.OnStateEnter: contexto 'o' é nulo ou não é Player1. Passe a instância do Player ao chamar SwitchState.");
+            Debug.LogError("PlayerStateMove.OnStateEnter: contexto 'o' é nulo ou não é PlayerMoviment. Passe a instância do Player ao chamar SwitchState.");
             return;
         }
 
@@ -27,25 +27,26 @@ public class PlayerStateMove : StateBase
 
         if (Input.GetKeyDown(KeyCode.Space) && player.IsGrounded)
         {
-            player.stateMachine.SwitchState(Player1.PlayerStates.Jump, player);
+            player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Jump, player);
             return;
         }
 
         if (Input.GetKeyDown(player.KeyShoot))
         {
-            player.stateMachine.SwitchState(Player1.PlayerStates.Shoot, player);
+            player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Shoot, player);
             return;
         }
 
         if (player.InputVertical == 0)
         {
-            player.stateMachine.SwitchState(Player1.PlayerStates.Idle, player);
+            player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Idle, player);
             return;
         }
 
-        if (Input.GetKey(player.KeyRun))
+        // CORRIGIDO: usa a flag unificada (teclado + botão touch)
+        if (player.IsRunning)
         {
-            player.stateMachine.SwitchState(Player1.PlayerStates.Run, player);
+            player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Run, player);
         }
     }
 

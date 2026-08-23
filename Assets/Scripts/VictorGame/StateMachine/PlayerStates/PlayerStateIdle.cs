@@ -3,14 +3,14 @@ using VictorGame.StateMachine;
 
 public class PlayerStateIdle : StateBase
 {
-    private Player1 player;
+    private PlayerMoviment player;
 
     public override void OnStateEnter(object o = null)
     {
-        player = o as Player1;
+        player = o as PlayerMoviment;
         if (player == null)
         {
-            Debug.LogError("PlayerStateIdle.OnStateEnter: contexto 'o' é nulo ou não é Player1. Passe a instância do Player ao chamar SwitchState.");
+            Debug.LogError("PlayerStateIdle.OnStateEnter: contexto 'o' é nulo ou não é PlayerMoviment. Passe a instância do Player ao chamar SwitchState.");
             return;
         }
 
@@ -20,9 +20,6 @@ public class PlayerStateIdle : StateBase
 
     public override void OnStateStay()
     {
-        Debug.Log("player null? " + (player == null));
-        Debug.Log("stateMachine null? " + (player != null && player.stateMachine == null));
-
         if (player == null) // proteção extra
             return;
 
@@ -30,19 +27,20 @@ public class PlayerStateIdle : StateBase
 
         if (Input.GetKeyDown(KeyCode.Space) && player.IsGrounded)
         {
-            player.stateMachine.SwitchState(Player1.PlayerStates.Jump, player);
+            player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Jump, player);
             return;
         }
 
         if (Input.GetKeyDown(player.KeyShoot))
         {
-            player.stateMachine.SwitchState(Player1.PlayerStates.Shoot, player);
+            player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Shoot, player);
             return;
         }
 
         if (player.InputVertical != 0)
         {
-            var next = Input.GetKey(player.KeyRun) ? Player1.PlayerStates.Run : Player1.PlayerStates.Move;
+            // CORRIGIDO: usa a flag unificada (teclado + botão touch) em vez de checar só o teclado
+            var next = player.IsRunning ? PlayerMoviment.PlayerStates.Run : PlayerMoviment.PlayerStates.Move;
             player.stateMachine.SwitchState(next, player);
         }
     }

@@ -1,15 +1,16 @@
+using UnityEngine;
 using VictorGame.StateMachine;
 
 public class PlayerStateJump : StateBase
 {
-    private Player1 player;
+    private PlayerMoviment player;
 
     public override void OnStateEnter(object o = null)
     {
-        player = o as Player1;
+        player = o as PlayerMoviment;
         if (player == null)
         {
-            UnityEngine.Debug.LogError("PlayerStateJump.OnStateEnter: contexto 'o' é nulo ou não é Player1.");
+            Debug.LogError("PlayerStateJump.OnStateEnter: contexto 'o' é nulo ou não é PlayerMoviment.");
             return;
         }
 
@@ -22,7 +23,8 @@ public class PlayerStateJump : StateBase
         if (player == null)
             return;
 
-        float speedMultiplier = UnityEngine.Input.GetKey(player.KeyRun) ? player.speedRun : 1f;
+        // CORRIGIDO: usa a flag unificada (teclado + botão touch)
+        float speedMultiplier = player.IsRunning ? player.speedRun : 1f;
         player.Move(speedMultiplier);
 
         // Só sai do estado de pulo quando encostar no chão de novo (e já estiver caindo/parado)
@@ -30,12 +32,12 @@ public class PlayerStateJump : StateBase
         {
             if (player.InputVertical != 0)
             {
-                var next = UnityEngine.Input.GetKey(player.KeyRun) ? Player1.PlayerStates.Run : Player1.PlayerStates.Move;
+                var next = player.IsRunning ? PlayerMoviment.PlayerStates.Run : PlayerMoviment.PlayerStates.Move;
                 player.stateMachine.SwitchState(next, player);
             }
             else
             {
-                player.stateMachine.SwitchState(Player1.PlayerStates.Idle, player);
+                player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Idle, player);
             }
         }
     }
