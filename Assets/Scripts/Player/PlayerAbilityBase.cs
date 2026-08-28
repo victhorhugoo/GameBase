@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class PlayerAbilityBase : MonoBehaviour
 {
-    protected Player player;
+    //protected Player player;
+    protected PlayerMoviment player;
     protected Inputs inputs;
 
     private void OnValidate()
     {
-        if (player == null) player = GetComponent<Player>();
+        if (player == null) player = GetComponent<PlayerMoviment>();
     }
 
     private void Start()

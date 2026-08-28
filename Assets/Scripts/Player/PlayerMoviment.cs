@@ -9,19 +9,18 @@ public class PlayerMoviment : MonoBehaviour
         Idle,
         Move,
         Run,
-        Jump,
-        Shoot
+        Jump
     }
 
     public Animator animator;
     public CharacterController characterController;
     public float speed = 1f;
-    public float turnSpeed = 10f; // agora é a velocidade de rotação SUAVE (Slerp), não giro por input
+    public float turnSpeed = 10f;
     public float gravity = -9.8f;
     public float jumpHeight = 2f;
 
     [Header("Camera Setup")]
-    public Transform _cameraTransform; // NOVO: arraste a Main Camera aqui (ou pega automático)
+    public Transform _cameraTransform;
 
     [Header("Touch Setup")]
     public VirtualJoystick virtualJoystick;
@@ -32,12 +31,6 @@ public class PlayerMoviment : MonoBehaviour
 
     [Header("Jump Setup")]
     public KeyCode KeyJump = KeyCode.Space;
-
-    [Header("Shoot Setup")]
-    public KeyCode KeyShoot = KeyCode.Mouse0;
-    public Transform firePoint;
-    public GameObject bulletPrefab;
-    public float bulletSpeed = 20f;
 
     public StateMachine<PlayerStates> stateMachine;
 
@@ -52,7 +45,6 @@ public class PlayerMoviment : MonoBehaviour
     private bool isRunningButtonUI;
     private bool jumpRequestedUI;
 
-    // NOVO: guarda a direção de movimento calculada a cada frame (relativa à câmera)
     private Vector3 moveDir;
 
     private void Start()
@@ -77,14 +69,13 @@ public class PlayerMoviment : MonoBehaviour
         stateMachine.RegisterStates(PlayerStates.Move, new PlayerStateMove());
         stateMachine.RegisterStates(PlayerStates.Run, new PlayerStateRun());
         stateMachine.RegisterStates(PlayerStates.Jump, new PlayerStateJump());
-        stateMachine.RegisterStates(PlayerStates.Shoot, new PlayerStateShoot());
         stateMachine.SwitchState(PlayerStates.Idle, this);
     }
 
     private void Update()
     {
         ReadInput();
-        ApplyGravity(); // RENOMEADO: não gira mais aqui, só aplica gravidade
+        ApplyGravity();
         stateMachine.Update();
 
         JumpPressed = false;
@@ -102,7 +93,6 @@ public class PlayerMoviment : MonoBehaviour
         InputHorizontal = Mathf.Clamp(keyboardH + joystickInput.x, -1f, 1f);
         InputVertical = Mathf.Clamp(keyboardV + joystickInput.y, -1f, 1f);
 
-        // NOVO: calcula a direção de movimento relativa à câmera (igual ao script antigo)
         if (_cameraTransform != null)
         {
             Vector3 camForward = _cameraTransform.forward;
@@ -116,7 +106,6 @@ public class PlayerMoviment : MonoBehaviour
         }
         else
         {
-            // fallback: sem câmera, usa direção local (comportamento antigo do Player1)
             moveDir = transform.forward * InputVertical + transform.right * InputHorizontal;
         }
 
@@ -128,11 +117,6 @@ public class PlayerMoviment : MonoBehaviour
         {
             JumpPressed = true;
             jumpRequestedUI = false;
-        }
-
-        if (Input.GetKeyDown(KeyShoot))
-        {
-            Shoot();
         }
     }
 
@@ -156,7 +140,6 @@ public class PlayerMoviment : MonoBehaviour
         speedVector.y = VerticalSpeed;
         characterController.Move(speedVector * Time.deltaTime);
 
-        // NOVO: rotação suave em direção ao movimento (igual ao script antigo)
         if (moveDir.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
@@ -169,26 +152,199 @@ public class PlayerMoviment : MonoBehaviour
         VerticalSpeed = jumpHeight;
     }
 
-    public void Shoot()
+    // ---- Métodos públicos para conectar nos botões da UI (touch) ----
+
+    public void JumpButton()
     {
-        Debug.Log("Shoot!");
-        if (bulletPrefab == null || firePoint == null)
+        jumpRequestedUI = true;
+    }
+
+    public void StartRun()
+    {
+        isRunningButtonUI = true;
+    }
+
+    public void StopRun()
+    {
+        isRunningButtonUI = false;
+    }
+}
+
+/*using UnityEngine;
+using VictorGame.StateMachine;
+
+[RequireComponent(typeof(CharacterController))]
+public class PlayerMoviment : MonoBehaviour
+{
+    public enum PlayerStates
+    {
+        Idle,
+        Move,
+        Run,
+        Jump
+        
+    }
+
+    public Animator animator;
+    public CharacterController characterController;
+    public float speed = 1f;
+    public float turnSpeed = 10f;
+    public float gravity = -9.8f;
+    public float jumpHeight = 2f;
+
+    [Header("Camera Setup")]
+    public Transform _cameraTransform;
+
+    [Header("Touch Setup")]
+    public VirtualJoystick virtualJoystick;
+
+    [Header("Run Setup")]
+    public KeyCode KeyRun = KeyCode.LeftShift;
+    public float speedRun = 1.5f;
+
+    [Header("Jump Setup")]
+    public KeyCode KeyJump = KeyCode.Space;
+
+    [Header("Gun Setup")]
+    public GunBase gun; // NOVO: arraste o objeto da arma aqui
+    public KeyCode KeyShoot = KeyCode.Mouse0;
+
+    public StateMachine<PlayerStates> stateMachine;
+
+    public float InputVertical { get; private set; }
+    public float InputHorizontal { get; private set; }
+    public float VerticalSpeed { get; private set; }
+    public bool IsGrounded => characterController.isGrounded;
+
+    public bool IsRunning { get; private set; }
+    public bool JumpPressed { get; private set; }
+
+    private bool isRunningButtonUI;
+    private bool jumpRequestedUI;
+
+    private Vector3 moveDir;
+
+    private void Start()
+    {
+        Init();
+    }
+
+    public void Init()
+    {
+        if (animator == null)
+            animator = GetComponent<Animator>();
+        if (characterController == null)
+            characterController = GetComponent<CharacterController>();
+        if (_cameraTransform == null && Camera.main != null)
+            _cameraTransform = Camera.main.transform;
+        if (animator == null)
+            Debug.LogError($"[{name}] Animator não atribuído nem encontrado via GetComponent!");
+        if (gun == null)
+            Debug.LogWarning($"[{name}] Gun não atribuído no Inspector — o tiro não vai funcionar.");
+
+        stateMachine = new StateMachine<PlayerStates>();
+        stateMachine.Init();
+        stateMachine.RegisterStates(PlayerStates.Idle, new PlayerStateIdle());
+        stateMachine.RegisterStates(PlayerStates.Move, new PlayerStateMove());
+        stateMachine.RegisterStates(PlayerStates.Run, new PlayerStateRun());
+        stateMachine.RegisterStates(PlayerStates.Jump, new PlayerStateJump());
+        // REMOVIDO: RegisterStates(PlayerStates.Shoot, ...)
+        stateMachine.SwitchState(PlayerStates.Idle, this);
+    }
+
+    private void Update()
+    {
+        ReadInput();
+        ApplyGravity();
+        stateMachine.Update();
+
+        JumpPressed = false;
+    }
+
+    private void ReadInput()
+    {
+        float keyboardH = Input.GetAxis("Horizontal");
+        float keyboardV = Input.GetAxis("Vertical");
+
+        Vector2 joystickInput = Vector2.zero;
+        if (virtualJoystick != null)
+            joystickInput = virtualJoystick.Direction;
+
+        InputHorizontal = Mathf.Clamp(keyboardH + joystickInput.x, -1f, 1f);
+        InputVertical = Mathf.Clamp(keyboardV + joystickInput.y, -1f, 1f);
+
+        if (_cameraTransform != null)
         {
-            Debug.LogWarning($"[{name}] Shoot: firePoint ou bulletPrefab não atribuído no Inspector.");
-            return;
+            Vector3 camForward = _cameraTransform.forward;
+            Vector3 camRight = _cameraTransform.right;
+            camForward.y = 0f;
+            camRight.y = 0f;
+            camForward.Normalize();
+            camRight.Normalize();
+
+            moveDir = camForward * InputVertical + camRight * InputHorizontal;
+        }
+        else
+        {
+            moveDir = transform.forward * InputVertical + transform.right * InputHorizontal;
         }
 
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        if (bullet.TryGetComponent(out Rigidbody bulletRb))
+        bool keyboardRun = Input.GetKey(KeyRun);
+        IsRunning = keyboardRun || isRunningButtonUI;
+
+        bool keyboardJump = Input.GetKeyDown(KeyJump);
+        if (keyboardJump || jumpRequestedUI)
         {
-            bulletRb.velocity = firePoint.forward * bulletSpeed;
+            JumpPressed = true;
+            jumpRequestedUI = false;
         }
 
-        if (animator != null)
+        // NOVO: tiro via GunBase (segurar para atirar continuamente, soltar para parar)
+        if (gun != null)
         {
-            animator.SetTrigger("Shoot");
+            if (Input.GetKeyDown(KeyShoot))
+                gun.StartShoot();
+
+            if (Input.GetKeyUp(KeyShoot))
+                gun.StopShoot();
         }
     }
+
+    private void ApplyGravity()
+    {
+        if (IsGrounded)
+        {
+            if (VerticalSpeed < 0)
+                VerticalSpeed = -1f;
+        }
+        else
+        {
+            VerticalSpeed += gravity * Time.deltaTime;
+        }
+    }
+
+    // ---- Ações que os estados usam ----
+    public void Move(float speedMultiplier)
+    {
+        Vector3 speedVector = moveDir * speed * speedMultiplier;
+        speedVector.y = VerticalSpeed;
+        characterController.Move(speedVector * Time.deltaTime);
+
+        if (moveDir.sqrMagnitude > 0.01f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
+        }
+    }
+
+    public void Jump()
+    {
+        VerticalSpeed = jumpHeight;
+    }
+
+    // REMOVIDO: método Shoot() antigo (agora vive dentro de GunBase)
+
+    // ---- Métodos públicos para conectar nos botões da UI (touch) ----
 
     public void JumpButton()
     {
@@ -205,12 +361,20 @@ public class PlayerMoviment : MonoBehaviour
         isRunningButtonUI = false;
     }
 
-    public void ShootButton()
+    // NOVO: substituem o antigo ShootButton()
+    public void StartShootButton()
     {
-        Shoot();
+        if (gun != null)
+            gun.StartShoot();
+    }
+
+    public void StopShootButton()
+    {
+        if (gun != null)
+            gun.StopShoot();
     }
 }
-
+*/
 
 /*
 using UnityEngine;

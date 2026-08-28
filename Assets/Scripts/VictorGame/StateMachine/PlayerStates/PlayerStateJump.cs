@@ -23,14 +23,14 @@ public class PlayerStateJump : StateBase
         if (player == null)
             return;
 
-        // CORRIGIDO: usa a flag unificada (teclado + botão touch)
+        
         float speedMultiplier = player.IsRunning ? player.speedRun : 1f;
         player.Move(speedMultiplier);
 
         // Só sai do estado de pulo quando encostar no chão de novo (e já estiver caindo/parado)
         if (player.IsGrounded && player.VerticalSpeed <= 0f)
         {
-            if (player.InputVertical != 0)
+            if (player.InputVertical != 0 || player.InputHorizontal != 0)
             {
                 var next = player.IsRunning ? PlayerMoviment.PlayerStates.Run : PlayerMoviment.PlayerStates.Move;
                 player.stateMachine.SwitchState(next, player);

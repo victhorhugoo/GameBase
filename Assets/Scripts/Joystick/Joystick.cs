@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-// Anexe este script ao objeto "JoystickBackground"
+
 public class VirtualJoystick : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointerUpHandler
 {
     public RectTransform background;   // o próprio fundo do joystick
@@ -12,7 +12,7 @@ public class VirtualJoystick : MonoBehaviour, IDragHandler, IPointerDownHandler,
 
     private Vector2 inputVector = Vector2.zero;
 
-    // Valores públicos que outros scripts (ex: movimento do personagem) vão ler
+    
     public float Horizontal => inputVector.x;
     public float Vertical => inputVector.y;
     public Vector2 Direction => inputVector;

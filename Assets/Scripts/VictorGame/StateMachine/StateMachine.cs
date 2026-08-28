@@ -82,7 +82,7 @@ namespace VictorGame.StateMachine
         {
             dictionaryState.Add(typeEnum, state);
         }
-        // "o" é o objeto de contexto (ex: o Player) repassado para OnStateEnter.
+        
         // Parâmetro opcional para manter compatibilidade com quem chama sem contexto (ex: GameManager).
         public void SwitchState(T state, object o = null)
         {

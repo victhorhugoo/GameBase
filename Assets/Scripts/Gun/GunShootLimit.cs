@@ -33,14 +33,7 @@ public class GunShootLimit : GunBase
                 UpdateUI();
                 yield return new WaitForSeconds(timeToRecharge);
             }
-            /*
-            else
-            {
-                yield return new WaitForSeconds(timeToRecharge);
-                _currentShoots = 0;
-            }
-            yield return new WaitForSeconds(TimeBetweenShots);
-            */
+            
         }
     }
 

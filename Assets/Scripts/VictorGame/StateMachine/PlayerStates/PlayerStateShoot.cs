@@ -1,3 +1,4 @@
+/*
 using VictorGame.StateMachine;
 
 public class PlayerStateShoot : StateBase
@@ -11,7 +12,7 @@ public class PlayerStateShoot : StateBase
         player = o as PlayerMoviment;
         if (player == null)
         {
-            UnityEngine.Debug.LogError("PlayerStateShoot.OnStateEnter: contexto 'o' é nulo ou não é Player1.");
+            UnityEngine.Debug.LogError("PlayerStateShoot.OnStateEnter: contexto 'o' é nulo ou não é Player.");
             return;
         }
 
@@ -41,3 +42,4 @@ public class PlayerStateShoot : StateBase
     {
     }
 }
+*/

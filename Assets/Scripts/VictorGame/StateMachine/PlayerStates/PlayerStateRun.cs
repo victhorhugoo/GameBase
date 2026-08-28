@@ -31,19 +31,15 @@ public class PlayerStateRun : StateBase
             return;
         }
 
-        if (Input.GetKeyDown(player.KeyShoot))
-        {
-            player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Shoot, player);
-            return;
-        }
+       
 
-        if (player.InputVertical == 0)
+        if (player.InputVertical == 0 && player.InputHorizontal == 0)
         {
             player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Idle, player);
             return;
         }
 
-        // CORRIGIDO: usa a flag unificada (teclado + botão touch)
+        
         if (!player.IsRunning)
         {
             player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Move, player);

@@ -20,7 +20,7 @@ public class PlayerStateIdle : StateBase
 
     public override void OnStateStay()
     {
-        if (player == null) // proteção extra
+        if (player == null)
             return;
 
         player.Move(1f);
@@ -31,15 +31,11 @@ public class PlayerStateIdle : StateBase
             return;
         }
 
-        if (Input.GetKeyDown(player.KeyShoot))
-        {
-            player.stateMachine.SwitchState(PlayerMoviment.PlayerStates.Shoot, player);
-            return;
-        }
+ 
 
-        if (player.InputVertical != 0)
+        if (player.InputVertical != 0 || player.InputHorizontal != 0)
         {
-            // CORRIGIDO: usa a flag unificada (teclado + botão touch) em vez de checar só o teclado
+            
             var next = player.IsRunning ? PlayerMoviment.PlayerStates.Run : PlayerMoviment.PlayerStates.Move;
             player.stateMachine.SwitchState(next, player);
         }
