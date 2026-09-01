@@ -19,11 +19,11 @@ public class ProjectileBase : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        /*var enemy = collision.gameObject.GetComponent<EnemyBase>();
-        if (enemy != null)
+        var damageable = collision.gameObject.GetComponent<IDamageable>();
+        if (damageable != null)
         {
-            enemy.Damage(damageAmount);
+            damageable.Damage(damageAmount);
             Destroy(gameObject);
-        }*/
+        }
     }
 }
