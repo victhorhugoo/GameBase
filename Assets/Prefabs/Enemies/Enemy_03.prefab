@@ -295,8 +295,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4929726557835864066}
   - component: {fileID: 8659765429881470051}
-  - component: {fileID: 7343498618288353298}
   - component: {fileID: 7118167610370858596}
+  - component: {fileID: 8725374961229516276}
   m_Layer: 0
   m_Name: Enemy_03
   m_TagString: Untagged
@@ -312,7 +312,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1811522978596382728}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -45.6, y: 8.6, z: 7.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -343,27 +343,6 @@ MonoBehaviour:
     trigger: Attack
   - animationType: 4
     trigger: Death
---- !u!114 &7343498618288353298
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1811522978596382728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06f8125b52296494987b5c40cddc7822, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startLife: 10
-  myCollider: {fileID: 7118167610370858596}
-  flashColor: {fileID: 2005666811686395443}
-  myParticleSystem: {fileID: 5741125778459891465}
-  _currentLife: 0
-  _animationBase: {fileID: 8659765429881470051}
-  startAnimationDuration: 0.2
-  startAnimationEase: 27
-  startWithBornAnimation: 1
 --- !u!65 &7118167610370858596
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -385,6 +364,33 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.5342598, y: 4.2768764, z: 2.5134459}
   m_Center: {x: -0.2343731, y: 1.6384382, z: 0.04094076}
+--- !u!114 &8725374961229516276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811522978596382728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a72368cebc6448479cd879e36bb0612, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startLife: 10
+  myCollider: {fileID: 7118167610370858596}
+  flashColor: {fileID: 2005666811686395443}
+  myParticleSystem: {fileID: 5741125778459891465}
+  _currentLife: 0
+  _animationBase: {fileID: 8659765429881470051}
+  startAnimationDuration: 0.2
+  startAnimationEase: 27
+  startWithBornAnimation: 1
+  waypoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  minDistance: 1
+  speed: 1
 --- !u!1 &3646066100216831408
 GameObject:
   m_ObjectHideFlags: 0

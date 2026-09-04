@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 using VictorGame.StateMachine;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerMoviment : MonoBehaviour
+public class PlayerMoviment : MonoBehaviour, IDamageable
 {
     public enum PlayerStates
     {
@@ -31,6 +32,9 @@ public class PlayerMoviment : MonoBehaviour
 
     [Header("Jump Setup")]
     public KeyCode KeyJump = KeyCode.Space;
+
+    [Header("Flash")]
+    public List<FlashColor> flashColors;
 
     public StateMachine<PlayerStates> stateMachine;
 
@@ -168,6 +172,24 @@ public class PlayerMoviment : MonoBehaviour
     {
         isRunningButtonUI = false;
     }
+
+    #region LIFE
+    public void Damage(float damage)
+    {
+        flashColors.ForEach(i => i.Flash());
+    }
+
+    public void Damage(float damage, Vector3 dir)
+    {
+        Damage(damage);
+        // Aplicar knockback ou outras reações aqui, se necessário
+    }
+
+    public void OnDamage(float damage)
+    {
+        // Implementar reação ao dano, como reduzir vida, tocar animação, etc.
+    }
+    #endregion
 }
 
 /*using UnityEngine;
