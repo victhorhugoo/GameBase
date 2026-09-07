@@ -84,14 +84,14 @@ namespace VictorGame.StateMachine
         }
         
         // Parâmetro opcional para manter compatibilidade com quem chama sem contexto (ex: GameManager).
-        public void SwitchState(T state, object o = null)
+        public void SwitchState(T state, params object[] objs)
         {
             if (_currentState != null)
             {
                 _currentState.OnStateExit();
             }
             _currentState = dictionaryState[state];
-            _currentState.OnStateEnter(o);
+            _currentState.OnStateEnter(objs);
         }
         public void Update()
         {

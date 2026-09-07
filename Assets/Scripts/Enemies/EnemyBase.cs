@@ -103,6 +103,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using Animation;
+
 namespace Enemy
 {
     [RequireComponent(typeof(CharacterController))]
@@ -131,7 +132,7 @@ namespace Enemy
         public float knockbackDrag = 5f;
         private Vector3 _knockbackVelocity;
 
-        private PlayerMoviment _player;
+        protected PlayerMoviment _player;
 
         private void Awake()
         {

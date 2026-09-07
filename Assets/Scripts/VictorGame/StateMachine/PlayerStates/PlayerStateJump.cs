@@ -5,9 +5,9 @@ public class PlayerStateJump : StateBase
 {
     private PlayerMoviment player;
 
-    public override void OnStateEnter(object o = null)
+    public override void OnStateEnter(params object[] objs)
     {
-        player = o as PlayerMoviment;
+        player = objs[0] as PlayerMoviment;
         if (player == null)
         {
             Debug.LogError("PlayerStateJump.OnStateEnter: contexto 'o' é nulo ou não é PlayerMoviment.");
