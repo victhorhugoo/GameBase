@@ -36,6 +36,9 @@ public class PlayerMoviment : MonoBehaviour, IDamageable
     [Header("Flash")]
     public List<FlashColor> flashColors;
 
+    [Header("Spawn")]
+    public Transform spawnPoint;
+
     public StateMachine<PlayerStates> stateMachine;
 
     public float InputVertical { get; private set; }
@@ -67,6 +70,8 @@ public class PlayerMoviment : MonoBehaviour, IDamageable
         if (animator == null)
             Debug.LogError($"[{name}] Animator não atribuído nem encontrado via GetComponent!");
 
+        SetSpawnPosition();
+
         stateMachine = new StateMachine<PlayerStates>();
         stateMachine.Init();
         stateMachine.RegisterStates(PlayerStates.Idle, new PlayerStateIdle());
@@ -83,6 +88,28 @@ public class PlayerMoviment : MonoBehaviour, IDamageable
         stateMachine.Update();
 
         JumpPressed = false;
+    }
+
+    private void SetSpawnPosition()
+    {
+        if (spawnPoint == null)
+        {
+            // Busca automática por tag, caso não tenha sido atribuído manualmente
+            GameObject autoSpawn = GameObject.FindGameObjectWithTag("PlayerSpawnPoint");
+            if (autoSpawn != null)
+                spawnPoint = autoSpawn.transform;
+        }
+
+        if (spawnPoint == null)
+        {
+            Debug.LogWarning($"[{name}] Nenhum spawn point definido nesta cena. Player permanece na posição atual.");
+            return;
+        }
+
+        characterController.enabled = false;
+        transform.position = spawnPoint.position;
+        transform.rotation = spawnPoint.rotation;
+        characterController.enabled = true;
     }
 
     private void ReadInput()
@@ -147,7 +174,11 @@ public class PlayerMoviment : MonoBehaviour, IDamageable
         if (moveDir.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.RotateTowards(
+                transform.rotation,
+                targetRotation,
+                turnSpeed * Time.deltaTime
+            );
         }
     }
 
